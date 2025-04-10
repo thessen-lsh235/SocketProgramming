@@ -71,27 +71,14 @@ int main()
 
 		std::cout << "클라이언트가 연결되었습니다!" << std::endl;
 
-		// 클라이언트와의 통신 루프
-		while (true)
-		{
-			// 메시지 수신
-			int valread = read(new_socket, buffer, BUFFER_SIZE);
-			// 보통 0일 경우 종료
-			if (valread <= 0) // 클라이언트가 연결을 종료하거나 에러 발생
-			{
-				std::cout << "클라이언트 연결 종료" << std::endl;
-				break;
-			}
+		// 메시지 수신
+		int valread = read(new_socket, buffer, BUFFER_SIZE);
+		std::cout << "클라이언트로부터 받은 메시지: " << buffer << std::endl;
 
-			std::cout << "클라이언트로부터 받은 메시지: " << buffer << std::endl;
-
-			// 메시지 전송 (에코 서버처럼 클라이언트에게 받은 메시지를 다시 보냄)
-			send(new_socket, buffer, valread, 0);
-			std::cout << "클라이언트로 메시지를 전송했습니다." << std::endl;
-
-			// 버퍼 초기화
-			memset(buffer, 0, BUFFER_SIZE);
-		}
+		// 메시지 전송
+		const char *response = "서버에서 보낸 메시지입니다.";
+		send(new_socket, response, strlen(response), 0);
+		std::cout << "클라이언트로 메시지를 전송했습니다." << std::endl;
 
 		// 클라이언트 소켓 종료
 		close(new_socket);
