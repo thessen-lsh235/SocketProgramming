@@ -1,0 +1,2 @@
+add_executable(LEEDONGHYUK_client client.cpp)
+add_executable(LEEDONGHYUK_server server.cpp)
