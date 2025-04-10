@@ -79,7 +79,7 @@ int main(){
     }
     //여긴 소켓 리스닝이 성공했을 경우
     std::cout << "Server :클라이언트 연결 대기 중...(4)" << std::endl;
-
+    //
 
     //🌍 5. 클라이언트 연결 수락: 연결 요청을 받아들인다.
 
@@ -99,31 +99,32 @@ int main(){
     std::cout << "Server :클라이언트 연결됨(5)" << std::endl;
 
     //🌍 6. 클라이언트 연결 수락: 연결 요청을 받아들인다.
-
-    char buffer[MAXBUF];
-    int read_size = recv(client_socket, buffer, sizeof(buffer),0);
-    // 여기까지 보니까, 대부분의 socket 통신 함수들은 첫번째 인자는 소켓이고, 두번째 인자는 주소나 버퍼, 
-    // 마지막은 사이즈 인 것 같다. 여기서 0은 통신관련 옵션인데, 없을 경우 0 MSG_WAITALL, MSG_PEEK 등등..
-    // 쓸일 있을지 모르겠음
-    if (read_size < 0) {
-        std::cerr << "Server :데이터 수신 실패" << std::endl;
-        close(client_socket); //이젠 얘도 닫아주어야함
-        close(tcp_socket);
-        return 1;
+    while(true){
+        char buffer[MAXBUF];
+        int read_size = recv(client_socket, buffer, sizeof(buffer)-1 ,0);
+        // 여기까지 보니까, 대부분의 socket 통신 함수들은 첫번째 인자는 소켓이고, 두번째 인자는 주소나 버퍼, 
+        // 마지막은 사이즈 인 것 같다. 여기서 0은 통신관련 옵션인데, 없을 경우 0 MSG_WAITALL, MSG_PEEK 등등..
+        // 쓸일 있을지 모르겠음
+        if (read_size <= 0) {
+            std::cerr << "Server :데이터 수신 실패" << std::endl;
+            close(client_socket); //이젠 얘도 닫아주어야함
+            close(tcp_socket);
+            return 1;
+        }
+        // 받은 데이터의 끝에 널(문자열 종료)을 추가하여 문자열 처리 가능하게 함
+        buffer[read_size] = '\0'; 
+        std::cout << "Server :클라이언트로부터 받은 메시지: " << buffer << std::endl;
+        const char* message = "Server :메시지를 받았습니다!" ;
+        send(client_socket, message, strlen(message),0);
     }
-    // 받은 데이터의 끝에 널(문자열 종료)을 추가하여 문자열 처리 가능하게 함
-    buffer[read_size] = '\0'; 
-    std::cout << "Server :클라이언트로부터 받은 메시지: " << buffer << std::endl;
+
 
     //🌍 7. 클라이언트에게 응답 보내기
-    const char* message = "Server :메시지를 받았습니다!" ;
-    send(client_socket, message, strlen(message),0);
+
 
     //🌍 8. 소켓 종료: 사용이 끝난 소켓들을 닫아서 자원을 해제합니다.
     close(client_socket);   // 클라이언트와의 소켓 종료
     close(tcp_socket);      // 서버 소켓 종료
-
-
 
 
 }
