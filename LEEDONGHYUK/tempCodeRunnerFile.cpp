@@ -1,2 +1,1 @@
-
-    struct sockaddr_in server_addr; 
+\n[시그널 감지] Ctrl + C 입력됨. 서버 종료 중...
