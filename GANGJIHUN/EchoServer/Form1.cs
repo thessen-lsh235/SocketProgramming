@@ -4,14 +4,18 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using System.Drawing;
+
 namespace EchoServer
 {
     public partial class Form1 : Form
     {
         private TcpListener tcpListener;
+        private TcpClient connectedClient;
         private bool isRunning = false;
         private Thread listenerThread;
         private const int Port = 9000;
+        
 
         public Form1()
         {
@@ -36,24 +40,18 @@ namespace EchoServer
 
                 while (isRunning)
                 {
-                    if (tcpListener.Pending())
-                    {
-                        TcpClient client = tcpListener.AcceptTcpClient();
+                    TcpClient client = tcpListener.AcceptTcpClient();
+                    connectedClient = client;
 
-                        Invoke(new Action(() =>
-                        {
-                            string remoteEP = client.Client.RemoteEndPoint.ToString();
-                            AddListViewItem(DateTime.Now.ToString("HH:mm:ss"), $"연결 됐수다: {remoteEP}");
-                        }));
-
-                        Thread clientThread = new Thread(() => ControlClient(client));
-                        clientThread.IsBackground = true;
-                        clientThread.Start();
-                    }
-                    else
+                    Invoke(new Action(() =>
                     {
-                        Thread.Sleep(100);
-                    }
+                        string remoteEP = client.Client.RemoteEndPoint.ToString();
+                        AddListViewItem(DateTime.Now.ToString("HH:mm:ss"), $"연결 됐수다: {remoteEP}");
+                    }));
+
+                    Thread clientThread = new Thread(() => ControlClient(client));
+                    clientThread.IsBackground = true;
+                    clientThread.Start();
                 }
             }
 
@@ -97,9 +95,6 @@ namespace EchoServer
                     {
                         AddListViewItem(DateTime.Now.ToString("HH:mm:ss"), receivedData);
                     }));
-
-                    byte[] sendData = Encoding.UTF8.GetBytes(receivedData);
-                    stream.Write(sendData, 0, sendData.Length);
                 }
 
                 Invoke(new Action(() =>
@@ -115,9 +110,10 @@ namespace EchoServer
                     AddListViewItem("클라이언트 에러 ;;", ex.Message);
                 }));
             }
+
             finally
             {
-                client.Close();
+                Socket_Close(client);
             }
         }
 
@@ -129,12 +125,11 @@ namespace EchoServer
         }
 
         private void BTN_OPEN_Click(object sender, EventArgs e)
-        {
-            BTN_OPEN.Enabled = false;
-            BTN_CLOSE.Enabled = true;
+        {            
             if (!isRunning)
             {
-                isRunning = true;
+                Btn_Status_Open();
+
                 listenerThread = new Thread(new ThreadStart(StartServer));
                 listenerThread.IsBackground = true;
                 listenerThread.Start();
@@ -142,20 +137,49 @@ namespace EchoServer
             }
         }
 
-        private void BTN_CLOSE_Click(object sender, EventArgs e)
+        private void BTN_STOP_Click(object sender, EventArgs e)
         {
-            BTN_OPEN.Enabled = true;
-            BTN_CLOSE.Enabled = false;
-            isRunning = false;
-            if (tcpListener != null)
-            {
-                tcpListener.Stop();
-            }
+            Btn_Status_Close();
+            tcpListener?.Stop();
         }
 
         private void BTN_EXIT_Click(object sender, EventArgs e)
         {
+            Socket_Close();
             Application.Exit();
+        }
+
+        private void Btn_Status_Open()
+        {
+            BTN_OPEN.Enabled = false;
+            BTN_STOP.Enabled = true;
+            isRunning = true;
+        }
+
+        private void Btn_Status_Close()
+        {
+            BTN_OPEN.Enabled = true;
+            BTN_STOP.Enabled = false;
+            isRunning = false;
+        }
+
+        private void Socket_Close()
+        {
+            connectedClient?.GetStream().Close();
+            connectedClient?.Close();
+            connectedClient = null;
+        }
+
+        private void Socket_Close(TcpClient client)
+        {
+            if (connectedClient == client)
+            {
+                connectedClient = null;
+            }
+
+            client?.GetStream().Close();
+            client?.Close();
+            client = null;
         }
     }
 }

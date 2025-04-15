@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.LV_SERVER = new System.Windows.Forms.ListView();
-            this.BTN_CLOSE = new System.Windows.Forms.Button();
+            this.BTN_STOP = new System.Windows.Forms.Button();
             this.BTN_OPEN = new System.Windows.Forms.Button();
             this.BTN_EXIT = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -37,27 +37,30 @@
             // LV_SERVER
             // 
             this.LV_SERVER.HideSelection = false;
-            this.LV_SERVER.Location = new System.Drawing.Point(12, 12);
+            this.LV_SERVER.Location = new System.Drawing.Point(17, 18);
+            this.LV_SERVER.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.LV_SERVER.Name = "LV_SERVER";
-            this.LV_SERVER.Size = new System.Drawing.Size(394, 426);
+            this.LV_SERVER.Size = new System.Drawing.Size(561, 637);
             this.LV_SERVER.TabIndex = 0;
             this.LV_SERVER.UseCompatibleStateImageBehavior = false;
             // 
-            // BTN_CLOSE
+            // BTN_STOP
             // 
-            this.BTN_CLOSE.Location = new System.Drawing.Point(412, 59);
-            this.BTN_CLOSE.Name = "BTN_CLOSE";
-            this.BTN_CLOSE.Size = new System.Drawing.Size(97, 41);
-            this.BTN_CLOSE.TabIndex = 1;
-            this.BTN_CLOSE.Text = "Close";
-            this.BTN_CLOSE.UseVisualStyleBackColor = true;
-            this.BTN_CLOSE.Click += new System.EventHandler(this.BTN_CLOSE_Click);
+            this.BTN_STOP.Location = new System.Drawing.Point(589, 88);
+            this.BTN_STOP.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.BTN_STOP.Name = "BTN_STOP";
+            this.BTN_STOP.Size = new System.Drawing.Size(139, 62);
+            this.BTN_STOP.TabIndex = 1;
+            this.BTN_STOP.Text = "Stop";
+            this.BTN_STOP.UseVisualStyleBackColor = true;
+            this.BTN_STOP.Click += new System.EventHandler(this.BTN_STOP_Click);
             // 
             // BTN_OPEN
             // 
-            this.BTN_OPEN.Location = new System.Drawing.Point(412, 12);
+            this.BTN_OPEN.Location = new System.Drawing.Point(589, 18);
+            this.BTN_OPEN.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.BTN_OPEN.Name = "BTN_OPEN";
-            this.BTN_OPEN.Size = new System.Drawing.Size(97, 41);
+            this.BTN_OPEN.Size = new System.Drawing.Size(139, 62);
             this.BTN_OPEN.TabIndex = 2;
             this.BTN_OPEN.Text = "Open";
             this.BTN_OPEN.UseVisualStyleBackColor = true;
@@ -65,9 +68,10 @@
             // 
             // BTN_EXIT
             // 
-            this.BTN_EXIT.Location = new System.Drawing.Point(412, 106);
+            this.BTN_EXIT.Location = new System.Drawing.Point(589, 159);
+            this.BTN_EXIT.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.BTN_EXIT.Name = "BTN_EXIT";
-            this.BTN_EXIT.Size = new System.Drawing.Size(97, 41);
+            this.BTN_EXIT.Size = new System.Drawing.Size(139, 62);
             this.BTN_EXIT.TabIndex = 3;
             this.BTN_EXIT.Text = "Exit";
             this.BTN_EXIT.UseVisualStyleBackColor = true;
@@ -75,14 +79,15 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(521, 450);
+            this.ClientSize = new System.Drawing.Size(744, 675);
             this.Controls.Add(this.BTN_EXIT);
             this.Controls.Add(this.BTN_OPEN);
-            this.Controls.Add(this.BTN_CLOSE);
+            this.Controls.Add(this.BTN_STOP);
             this.Controls.Add(this.LV_SERVER);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "EchoServer";
@@ -93,7 +98,7 @@
         #endregion
 
         private System.Windows.Forms.ListView LV_SERVER;
-        private System.Windows.Forms.Button BTN_CLOSE;
+        private System.Windows.Forms.Button BTN_STOP;
         private System.Windows.Forms.Button BTN_OPEN;
         private System.Windows.Forms.Button BTN_EXIT;
     }

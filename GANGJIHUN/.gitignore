@@ -71,3 +71,21 @@ $RECYCLE.BIN/
 *.msi
 *.msm
 *.msp
+
+# Visual Studio 빌드 결과물
+**/bin/
+**/obj/
+
+# 사용자 환경 설정 파일
+*.user
+*.suo
+
+# 빌드 아웃풋
+*.exe
+*.pdb
+
+# VS 캐시 관련
+*.cache
+
+# 기타 자동 생성 파일
+*.csproj.FileListAbsolute.txt
