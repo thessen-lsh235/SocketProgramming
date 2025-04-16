@@ -1,0 +1,40 @@
+﻿<Window x:Class="echo_server.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:echo_server"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- 메시지 출력 영역 (왼쪽) -->
+        <StackPanel Grid.Column="0" Margin="10">
+            <TextBlock Text="서버 상태" FontWeight="Bold"/>
+            <ListBox Name="lstMessages" Height="300" Margin="0,5"/>
+            <Button Content="서버 시작" Click="StartServer_Click"/>
+        </StackPanel>
+
+        <!-- 클라이언트 선택 및 정보 표시 영역 (오른쪽) -->
+        <!-- 클라이언트 선택 및 정보 표시 영역 (오른쪽) -->
+        <StackPanel Grid.Column="1" Margin="10">
+            <TextBlock Text="연결된 클라이언트" FontWeight="Bold"/>
+            <ComboBox Name="comboClients" SelectionChanged="comboClients_SelectionChanged" Margin="0,5" Height="25"/>
+            <Label Name="lblClientCount" Content="클라이언트 수: 0명" FontWeight="Bold" Margin="0,5,0,5"/>
+
+            <TextBlock Text="클라이언트 정보" FontWeight="Bold" Margin="0,10,0,5"/>
+            <TextBlock Name="txtClientInfo" TextWrapping="Wrap" Foreground="Gray"/>
+
+            <TextBlock Text="메시지 전송" FontWeight="Bold" Margin="0,30,0,5"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBox Name="txtSendMessage" Width="200" Margin="0,0,10,0"/>
+                <Button Content="전송" Width="80" Click="btnSend_Click"/>
+            </StackPanel>
+        </StackPanel>
+
+    </Grid>
+</Window>
