@@ -1,19 +1,13 @@
 cmake_minimum_required(VERSION 3.10)
-project(SocketProgramming)
+project(LEEDONGHYUK)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# 제외할 디렉토리
-set(EXCLUDED_DIR "SEONGYUNSEOK")
+# ch1_echo/ 안에 있는 .cpp 전부 가져오기
+file(GLOB CH1_ECHO_SOURCES CONFIGURE_DEPENDS "ch1_echo/*.cpp")
 
-# 현재 디렉토리 내 모든 하위 디렉토리 가져오기
-file(GLOB CHILD_DIRS RELATIVE ${CMAKE_SOURCE_DIR} */)
-
-foreach(dir ${CHILD_DIRS})
-    if(NOT dir STREQUAL ${EXCLUDED_DIR})
-        if(EXISTS "${CMAKE_SOURCE_DIR}/${dir}/CMakeLists.txt")
-            add_subdirectory(${dir})
-        endif()
-    endif()
+# 각 cpp를 독립된 실행파일로 만들기
+foreach(src ${CH1_ECHO_SOURCES})
+    get_filename_component(exec_name ${src} NAME_WE)
+    add_executable(${exec_name} ${src})
 endforeach()
-

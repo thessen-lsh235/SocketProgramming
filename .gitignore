@@ -1,3 +1,5 @@
-**/build/
-**/.vscode/
-**/.vs/
+/LEEDONGHYUK/build*
+/LEEDONGHYUK/build/
+/LEEDONGHYUK/.vscode/
+/LEEDONGHYUK/.vs/
+/build/

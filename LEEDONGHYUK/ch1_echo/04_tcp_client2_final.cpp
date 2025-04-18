@@ -27,7 +27,7 @@
 #include <stdio.h>
 
 #define PORT 12345 // 서버 포트
-#define MAXBUF 1024
+#define MAXBUF 4
 #define SERVER_IP "127.0.0.1" // 서버 IP (로컬호스트 예시)
 
 using namespace std; // 화딱지 나서 여기선 이거 씀

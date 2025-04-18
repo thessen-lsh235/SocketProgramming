@@ -31,14 +31,9 @@
 일단 서버는 오는애들 막지 않고 통신하면 된다는 것으로 이해
 ->타임아웃으로 해도 좋을거 같긴함.
 
-
-
--
-
 */
 
 #include <signal.h>
-
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
@@ -49,23 +44,32 @@
 #include <stdio.h>
 
 //signal 핸들러는 전역에 소켓을 선언해야 닫을수가 있다.
-int tcp_socket = -1; 
-int client_socket = -1;
+// int tcp_socket = -1; 
+// int client_socket = -1;
 
 
 
 #define PORT 12345 //서버 포트
-#define MAXBUF 1024
+#define MAXBUF 4
 
 //USER FUNCTION 
-void handle_sigint(int sig);
+// void handle_sigint(int sig);
 
 int main(){
 
     // 🌍 1. 소켓 생성 : TCP 소켓을 판다.
 
-    int tcp_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-    // PF_INET : IPv4 주소체계,SOCK_STREAM : 스트림 기반 소켓(TCP)
+    // signal(SIGINT, handle_sigint); // <- 시그널 핸들러 등록
+
+    int tcp_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP); // 전역 변수 사용    // PF_INET : IPv4 주소체계,SOCK_STREAM : 스트림 기반 소켓(TCP)
+
+    int opt = 1;
+    // SO_REUSEADDR: TIME_WAIT 상태의 포트를 즉시 재사용할 수 있게 함 (서버 재시작 시 유용)
+	setsockopt(tcp_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    // SO_REUSEPORT: 동일한 포트에 대해 여러 소켓 바인딩 가능 (멀티 프로세스/스레드 서버에서 사용)
+    setsockopt(tcp_socket, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
+    //setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(timeout)); // send 타임아웃
+
     // IPPROTO_TCP : TCP프로토콜임을 명시한다. SOCK_STREAM과 같이 사용-> type = tcp 으로 이해
    if (tcp_socket < 0) {
     std::cerr << "Server : 소켓 생성 실패(1)" << std::endl;
@@ -106,11 +110,14 @@ int main(){
     //🌍 4. 클라이언트 연결 대기: listen() 호출로 소켓 수신상태를 변경한다.
 
     // 3은 대기열의 최대 길이인데, 왜 3으로 지정해놨는지는 잘 모르겠음.
+    // 3개 넘으면 커널딴에서 죽여버림. accept까지 오지도 못한다.
+
     if(listen(tcp_socket,3) < 0){
             std::cerr <<"Server :소켓 리스닝 실패(4)" << std::endl;
             close(tcp_socket);
             return 1;
     }
+
     //여긴 소켓 리스닝이 성공했을 경우
     std::cout << "Server :클라이언트 연결 대기 중...(4)" << std::endl;
     //
@@ -124,7 +131,6 @@ int main(){
     // 마찬가지로 주소체계(IPv4),실제주소(패딩 처리해서 받아줌), htons등의 처리를 해줘야겟네
 
     while(true){
-        
         client_socket = accept(tcp_socket, (struct sockaddr*)&client_addr, &addr_len);
         //서버단에서 구조체를 세팅하고 만들었듯이, 클라이언트도 구조체로 만들어서 던져줄 것임. 그것을 받으면 됨.
         if(client_socket <0){
@@ -144,8 +150,8 @@ int main(){
             // 마지막은 사이즈 인 것 같다. 여기서 0은 통신관련 옵션인데, 없을 경우 0 MSG_WAITALL, MSG_PEEK 등등..
             // 쓸일 있을지 모르겠음
             if (read_size <= 0) {
-                std::cout << "Server :클라이언트 연결 종료 됨됨" << std::endl;
-                // close(client_socket); //이젠 얘도 닫아주어야함
+                std::cout << "Server :클라이언트 연결 종료 됨" << std::endl;
+                close(client_socket); //이젠 얘도 닫아주어야함
                 break; // 다음 클라이언트 받기 위해 루프 탈출.
             }
             // 받은 데이터의 끝에 널(문자열 종료)을 추가하여 문자열 처리 가능하게 함
@@ -156,9 +162,6 @@ int main(){
         }
     }
 
-
-
-
     //🌍 8. 소켓 종료: 사용이 끝난 소켓들을 닫아서 자원을 해제합니다.
     close(client_socket);   // 클라이언트와의 소켓 종료
     close(tcp_socket);      // 서버 소켓 종료
@@ -167,19 +170,19 @@ int main(){
 }
 
 //sigint 감지 함수 
-void handle_sigint(int sig) {
-    printf("\n[시그널 감지] 서버 종료 중...\n");
-    fflush(stdout);  // 강제 출력
+// void handle_sigint(int sig) {
+//     printf("\n[시그널 감지] 서버 종료 중...\n");
+//     fflush(stdout);  // 강제 출력
     
-    if (client_socket != -1) {
-        close(client_socket);
-        std::cout << "클라이언트 소켓 닫음" << std::endl;
-    }
+//     if (client_socket != -1) {
+//         close(client_socket);
+//         std::cout << "클라이언트 소켓 닫음" << std::endl;
+//     }
 
-    if (tcp_socket != -1) {
-        close(tcp_socket);
-        std::cout << "서버 소켓 닫음" << std::endl;
-    }
+//     if (tcp_socket != -1) {
+//         close(tcp_socket);
+//         std::cout << "서버 소켓 닫음" << std::endl;
+//     }
 
-    exit(0);
-}
+//     exit(0);
+// }
