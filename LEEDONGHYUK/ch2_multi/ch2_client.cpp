@@ -4,8 +4,16 @@
 #include <cstring>
 #include <sys/select.h>
 
+
+struct Message {
+    int id;
+    int length;
+    char data[1024];
+};
+
 int main(){
 
+    int my_id = -1;
     //1.소켓 생성
     int sock = socket(AF_INET, SOCK_STREAM,0);
     if (sock < 0) { perror("socket"); return 1; }
@@ -26,7 +34,6 @@ int main(){
 
     // 4.select용 fd_set 선언
     fd_set read_fdset;
-    char buffer[1024];
 
     while(true){
         FD_ZERO(&read_fdset); //fdset 초기화
@@ -43,22 +50,34 @@ int main(){
         }
         // 6. 사용자가 입력한 경우(stdin)
         if(FD_ISSET(0, &read_fdset)){
-            memset(buffer, 0, sizeof(buffer));
-            if(!fgets(buffer, sizeof(buffer), stdin)) break;
-            send(sock, buffer, strlen(buffer), 0);
+            std::string input;
+            std::getline(std::cin, input); //input getline으로 받아오고. 
+
+            Message m;
+            m.id = my_id;
+            m.length = std::min( (int)input.size(), (int)sizeof(m.data) -1 );
+            strncpy(m.data, input.c_str(), m.length);
+            m.data[m.length] = '\0';
+
+            send(sock, &m, sizeof(m), 0);
         }
 
         //7. 서버에서 메시지가 온 경우
         if(FD_ISSET(sock, &read_fdset)){
             // memset(buffer, 0, sizeof(buffer)); //buffer 받을 공간 할당해놓고
-            int len = recv(sock, buffer, sizeof(buffer)-1,  0);
+            Message m;
+            int len = recv(sock, &m, sizeof(m),  0);
             if(len<=0){
                 std::cout <<"server disconnected\n";
                 break;
             }
-            buffer[len] = '\0';  // ⭐ 추가
-            std::cout <<"[Server]: " << buffer << std::endl;
-        }
+            if (my_id == -1 && m.id > 0) {
+                my_id = m.id;
+            }
+            int safe_len = std::min(m.length, (int)sizeof(m.data) - 1);
+            m.data[safe_len] = '\0';
+            std::cout << "[Server]: " << m.data 
+            << " (id=" << m.id << ", len=" << m.length << ")\n";        }
     }
 
     close(sock);
